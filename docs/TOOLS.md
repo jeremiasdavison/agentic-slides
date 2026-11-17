@@ -5,6 +5,17 @@ All args must be validated before side effects (see Real-Time-Agent guard patter
 
 ## Tools
 
+### `retrieve_brief`
+
+RAG over the pretrain corpus (see `docs/PRETRAIN.md`). Prefer this before inventing facts.
+
+| Arg | Type | Notes |
+|-----|------|-------|
+| `query` | string | What the speaker needs |
+| `k` | number | default 5, max 10 |
+
+Returns chunks with `sourceId`, locator, score. If top score is low → use `propose_only`.
+
 ### `get_deck_context`
 
 Read-only snapshot for the model.
@@ -89,10 +100,12 @@ Creates placeholder immediately; swaps asset when ready.
 You are a silent co-pilot for a live presentation.
 You listen to the speaker and the deck outline.
 You NEVER speak to the audience.
+You have access to a pretrain brief corpus — call retrieve_brief before inventing facts.
 You call tools only when:
   (a) the speaker gives an explicit command, or
   (b) you detect a high-confidence content gap they clearly intended to cover.
 Prefer propose_only or insert_slide AFTER the current slide.
+Cite sourceIds in speaker notes when grounded.
 Respect style lock and density limits.
 If unsure, propose_only.
 ```

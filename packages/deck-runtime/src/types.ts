@@ -24,6 +24,8 @@ export type Deck = {
   style: StyleTokens
   slides: Slide[]
   version: number
+  /** Optional link back to pretrain brief project */
+  briefProjectId?: string
 }
 
 export type PatchOp =

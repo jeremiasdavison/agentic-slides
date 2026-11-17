@@ -2,13 +2,14 @@
   "name": "agentic-slides",
   "version": "0.0.1",
   "private": true,
-  "description": "Live AI presentations: frontend-slides + realtime listening + on-the-fly mutation",
+  "description": "Agentic presentations: pretrain from PDFs/research + realtime listening + live mutation",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "dev": "npm run dev -w apps/web",
+    "smoke:brief": "node packages/brief-corpus/scripts/smoke.mjs",
     "typecheck": "tsc -p packages/deck-runtime --noEmit || true"
   },
   "license": "MIT"

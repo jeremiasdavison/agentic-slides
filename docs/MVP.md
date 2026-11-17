@@ -1,8 +1,14 @@
 # MVP — Agentic Slides
 
-## Vertical slice (demo en ~1 sprint técnico)
+## Vertical slices
 
-> Decir en voz alta: *"agregá un slide con tres bullets sobre X"* → HUD propone preview → `Y` → la audiencia ve la slide nueva con crossfade, en el mismo estilo de la deck.
+### A — Pretrain demo
+
+> Subir 1–2 PDFs + temas a hablar → (opcional) aprobar búsquedas web → confirmar outline → generar deck HTML style-locked con citas.
+
+### B — Live mutate demo
+
+> Decir: *"agregá un slide con tres bullets sobre X"* → `retrieve_brief` → HUD propone preview citado → `Y` → audiencia ve crossfade.
 
 ## Fases
 
@@ -10,68 +16,76 @@
 
 - [x] Principios de producto
 - [x] Architecture + tool surface
-- [x] Docs en repo / Notion
+- [x] Competitive research + Pretrain design
+- [x] `deck-runtime` + `brief-corpus` stubs
 
-### Fase 1 — Deck runtime (sin IA)
+### Fase 1 — Pretrain / Brief corpus
 
-**Done when:** podés cargar un HTML frontend-slides, navegar, y desde consola/HUD aplicar `insert_slide` / `patch_slide` locales.
+**Done when:** upload PDF/MD + goals → ingest/index → outline con citas → usuario confirma → deck HTML stub generado (aunque sea template simple).
+
+- [ ] Upload UI + storage (local/Vercel Blob/Supabase)
+- [ ] PDF/text extractors
+- [ ] `runIngestAndIndex` + embeddings (or lexical v1)
+- [ ] Opt-in web research (suggest → approve → fetch → `attachWebHits`)
+- [ ] `draftOutline` + edit UI + `needsSource` warnings
+- [ ] Style pick (frontend-slides) + generate HTML
+- [ ] Checkpoints resume
+
+### Fase 2 — Deck runtime + sync
+
+**Done when:** cargar deck generada, navegar, sync presenter/audience.
 
 - [ ] Parser HTML → `Deck` model
 - [ ] Controller 1920×1080 (viewport-base rules)
 - [ ] `applyPatch` + version bump
-- [ ] Presenter route + Audience route
-- [ ] Sync mínimo (Supabase channel o polling local)
+- [ ] Presenter + Audience routes
+- [ ] Sync (Supabase / SSE)
 
-### Fase 2 — Escucha activa
+### Fase 3 — Escucha activa grounded
 
-**Done when:** el mic transcribe, detecta un comando explícito, y propone un patch en el HUD (sin auto-apply).
+**Done when:** mic transcribe, comando explícito → retrieve_brief → proposal HUD (sin auto-apply).
 
-- [ ] `/api/session` SDP proxy (patrón Real-Time-Agent)
-- [ ] `useAgenticPresenter` (WebRTC + VAD + transcript)
-- [ ] Tools: `get_deck_context`, `propose_only`, `insert_slide` (stub HTML)
-- [ ] HUD: transcript + proposal card + `Y`/`N`/`F`
+- [ ] `/api/session` SDP proxy
+- [ ] `useAgenticPresenter`
+- [ ] Tools: `retrieve_brief`, `get_deck_context`, `propose_only`, `insert_slide`
+- [ ] Context prune + echo current slide
+- [ ] HUD: transcript + proposal + source chips + `Y`/`N`/`F`
 - [ ] Listen modes: Shadow | Confirm
 
-### Fase 3 — Generación style-locked
+### Fase 4 — Style-locked live generation
 
-**Done when:** `insert_slide` produce HTML que respeta tokens del preset (tipografía, colores, spacing) y pasa density check.
+**Done when:** `insert_slide` respeta tokens del preset + density check + stale-media discard.
 
-- [ ] Style token extraction from deck
-- [ ] Generator prompt + template fragments
+- [ ] Style token extraction
 - [ ] Dual buffer + crossfade
-- [ ] Reject/overflow → auto-split or propose_only
+- [ ] Async media guard (generation token)
+- [ ] Reject/overflow → split or propose_only
 
-### Fase 4 — Media creativa
+### Fase 5 — Media + polish
 
-**Done when:** comando *"mostrá un diagrama de X"* encola placeholder → asset → reemplazo en slide.
+- [ ] Asset library with captions (pre-upload)
+- [ ] `queue_media` + placeholders
+- [ ] Freeze, audience Q&A
+- [ ] Rate limits + cost panel
+- [ ] Export HTML/PDF/PPTX
+- [ ] Public demo
 
-- [ ] `queue_media` tool
-- [ ] Placeholder slide states
-- [ ] Image gen / URL embed path
-- [ ] Video stub (URL o upload)
-
-### Fase 5 — Product polish
-
-- [ ] Freeze mode mid-talk
-- [ ] Audience Q&A channel (text)
-- [ ] Cost caps + session metrics
-- [ ] Post-talk export (HTML + PDF scripts)
-- [ ] Public demo + LinkedIn clip
-
-## Acceptance criteria (Fase 2 demo)
+## Acceptance criteria
 
 | # | Criterio |
 |---|----------|
-| 1 | Deck de 5+ slides carga en `/present/[id]` y `/p/[id]` |
-| 2 | Mic en localhost; transcript visible en HUD |
-| 3 | Frase comando → proposal card &lt; 3s |
-| 4 | `Y` aplica; audience refleja en &lt; 500ms |
-| 5 | `N` descarta; deck intacta |
-| 6 | API key nunca en el browser |
+| P1 | PDF + 3 goals → outline con ≥1 citation en slides grounded |
+| P2 | Web research off by default; queries require approval |
+| P3 | `needsSource` blocks silent invent unless user overrides |
+| L1 | Deck carga en `/present` y `/p` |
+| L2 | Comando voz → proposal &lt; 3s con source chip si hay hit |
+| L3 | `Y` sync audience &lt; 500ms; `N` no muta |
+| L4 | API keys never in browser |
 
 ## Out of scope MVP
 
 - Auto-mutation of the current visible slide
 - Agent speaking aloud to the room
 - Full PPT round-trip editing
-- Multi-language audience captions (nice-to-have later)
+- Fine-tuning / LoRA
+- Unattended web crawl

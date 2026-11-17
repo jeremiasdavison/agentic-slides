@@ -26,12 +26,15 @@ WebRTC ──▶ Realtime session
               ├─▶ input transcription (Whisper)
               │         │
               │         ▼
-              │   Rolling context (last N min + deck outline)
+              │   Rolling context (pruned ~90s + deck outline)
+              │   + echo current slide after every change
               │
               └─▶ tool calls (intents)
                         │
+                        ├─▶ retrieve_brief (pretrain corpus)
                         ▼
                   Mutation Engine → HUD → apply/discard
+                  (stale media discarded if proposal superseded)
 ```
 
 ## VAD para talks
@@ -85,6 +88,12 @@ Nunca pintar HTML incompleto en audience:
 3. Crossfade 200–400ms al aplicar
 4. Si falla verificación → degradar a `propose_only`
 
+## Long-talk reliability (from Don’t Panic Deck)
+
+- Prune conversation items older than ~90s; keep last ~8
+- If continuous speech never pauses for VAD, nudge with `input_audio_buffer.commit` + `response.create`
+- Always tell the model the current slide title/id after nav/mutation
+
 ## Costos
 
 Reusar caps de Real-Time-Agent:
@@ -92,9 +101,11 @@ Reusar caps de Real-Time-Agent:
 - Idle timeout (ej. 90s sin speech → disconnect)
 - Hard session cap por talk segment
 - Presenter reconnect = nueva sesión
+- Rate-limit session + generate endpoints on public deploys
 
 ## Open questions
 
 1. ¿Segundo mic / chat para audiencia, o solo presentador en v1?
 2. ¿Coach earpiece en misma sesión Realtime (audio out filtrado) o canal separado?
 3. ¿Persistir transcript post-talk como speaker notes enriquecidas?
+4. ¿Cuánto del brief corpus inyectar en system prompt vs solo on-demand `retrieve_brief`?
