@@ -46,7 +46,7 @@ vendor/                      # Notas de reuso Real-Time-Agent
 | 4 | Live style-locked inserts + stale-media guard |
 | 5 | Assets, Q&A, rate limits, export, demo |
 
-Detalle: [`docs/PRETRAIN.md`](docs/PRETRAIN.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MVP.md`](docs/MVP.md) · [`docs/COMPETITIVE.md`](docs/COMPETITIVE.md)
+Detalle: [`docs/PRETRAIN.md`](docs/PRETRAIN.md) · [`docs/MODES.md`](docs/MODES.md) (serio vs pitch) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MVP.md`](docs/MVP.md) · [`docs/COMPETITIVE.md`](docs/COMPETITIVE.md)
 
 ## Stack
 
